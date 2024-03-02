@@ -6,9 +6,15 @@ export default function SButton({
   loading,
   disabled,
   className,
+  type,
 }) {
   return (
-    <button className={className} onClick={action} disabled={disabled}>
+    <button
+      type={type}
+      className={className}
+      onClick={action}
+      disabled={disabled}
+    >
       {loading ? "Loading..." : children}
     </button>
   );

@@ -5,8 +5,10 @@ export default function TextInputWithLabel({
   label,
   name,
   type,
+  value,
   className,
   placeholder,
+  onChange,
 }) {
   return (
     <div>
@@ -16,8 +18,10 @@ export default function TextInputWithLabel({
       <input
         name={name}
         type={type}
+        value={value}
         className={className}
         placeholder={placeholder}
+        onChange={onChange}
         required
       />
     </div>
@@ -29,6 +33,8 @@ TextInputWithLabel.propTypes = {
   label: PropTypes.string,
   name: PropTypes.string,
   type: PropTypes.string,
+  value: PropTypes.string,
   className: PropTypes.string,
   placeholder: PropTypes.string,
+  onChange: PropTypes.func,
 };
