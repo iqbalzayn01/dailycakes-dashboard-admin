@@ -1,5 +1,5 @@
 import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 
 import Sform from "./form";
 import SAlert from "../../components/Alert";
@@ -9,10 +9,14 @@ import SAlert from "../../components/Alert";
 // import { userLogin } from "../../redux/auth/actions";
 import axios from "axios";
 
+import { config } from "../../config";
+
 export default function PageSignIn() {
   // const dispatch = useDispatch();
 
-  // const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -23,30 +27,32 @@ export default function PageSignIn() {
     message: "",
   });
 
-  // const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setIsLoading(true);
     try {
-      const res = await axios.post(
-        "http://localhost:9000/api/cms/auth/signin",
-        {
-          email: form.email,
-          password: form.password,
-        }
-      );
-      console.log(res);
+      const res = await axios.post(`${config.api_url}/cms/auth/signin`, form);
+
+      localStorage.setItem("token", res.data.data.token);
+      setIsLoading(false);
+      navigate("dashboard");
     } catch (err) {
-      console.log(err.response.data.msg);
+      setIsLoading(false);
       setAlert({
         status: true,
-        message: err.response.data.msg,
+        message: err?.response?.data?.msg ?? "Internal Server Error",
       });
     }
   };
+
+  if (token) return <Navigate to="dashboard" replace={true} />;
 
   return (
     <section className="container-base w-full h-screen flex flex-col place-content-center gap-5 px-10 py-10">
@@ -65,6 +71,7 @@ export default function PageSignIn() {
         valuePassword={form.password}
         handleSubmit={handleSubmit}
         onChange={handleChange}
+        isLoading={isLoading}
       />
     </section>
   );

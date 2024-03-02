@@ -11,7 +11,7 @@ export default function Sform({
   onChange,
 }) {
   return (
-    <form className="text-center">
+    <form onSubmit={handleSubmit} className="text-center">
       <TextInputWithLabel
         htmlFor="email-address"
         label="Email address"
@@ -33,10 +33,10 @@ export default function Sform({
         onChange={onChange}
       />
       <SButton
+        type="submit"
         className="bg-blue-500 hover:bg-blue-600 px-5 py-2 text-center text-white rounded-lg"
         loading={isLoading}
         disabled={isLoading}
-        action={handleSubmit}
       >
         Sign In
       </SButton>
