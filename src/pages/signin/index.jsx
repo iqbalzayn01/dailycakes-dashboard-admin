@@ -1,22 +1,18 @@
 import { useState } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
+import { setToken } from "../../redux/authSlice";
+import { config } from "../../config";
 
 import Sform from "./form";
 import SAlert from "../../components/Alert";
-// import SForm from "./form";
-// import { postData } from "../../utils/fetch";
-// import { useDispatch } from "react-redux";
-// import { userLogin } from "../../redux/auth/actions";
-import axios from "axios";
-
-import { config } from "../../config";
 
 export default function PageSignIn() {
-  // const dispatch = useDispatch();
-
-  const token = localStorage.getItem("token");
-
+  const token = useSelector((state) => state.auth.token);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -40,9 +36,9 @@ export default function PageSignIn() {
     try {
       const res = await axios.post(`${config.api_url}/cms/auth/signin`, form);
 
-      localStorage.setItem("token", res.data.data.token);
+      dispatch(setToken(res.data.data.token));
       setIsLoading(false);
-      navigate("dashboard");
+      navigate("/");
     } catch (err) {
       setIsLoading(false);
       setAlert({
@@ -52,7 +48,7 @@ export default function PageSignIn() {
     }
   };
 
-  if (token) return <Navigate to="dashboard" replace={true} />;
+  if (token) return <Navigate to="/" replace={true} />;
 
   return (
     <section className="container-base w-full h-screen flex flex-col place-content-center gap-5 px-10 py-10">

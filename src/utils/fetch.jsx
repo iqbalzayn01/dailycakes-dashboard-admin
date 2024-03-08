@@ -8,7 +8,7 @@ export async function getData(url, params) {
       ? JSON.parse(localStorage.getItem("auth"))
       : {};
 
-    return await axios.get(`${config.api_host_dev}${url}`, {
+    return await axios.get(`${config.api_url}${url}`, {
       params,
       headers: {
         Authorization: `Bearer ${token}`,
@@ -25,7 +25,7 @@ export async function postData(url, payload, formData) {
       ? JSON.parse(localStorage.getItem("auth"))
       : {};
 
-    return await axios.post(`${config.api_host_dev}${url}`, payload, {
+    return await axios.post(`${config.api_url}${url}`, payload, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": formData ? "multipart/form-data" : "application/json",
@@ -42,7 +42,7 @@ export async function putData(url, payload) {
       ? JSON.parse(localStorage.getItem("auth"))
       : {};
 
-    return await axios.put(`${config.api_host_dev}${url}`, payload, {
+    return await axios.put(`${config.api_url}${url}`, payload, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -58,7 +58,7 @@ export async function deleteData(url) {
       ? JSON.parse(localStorage.getItem("auth"))
       : {};
 
-    return await axios.delete(`${config.api_host_dev}${url}`, {
+    return await axios.delete(`${config.api_url}${url}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
