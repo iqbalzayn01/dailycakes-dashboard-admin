@@ -11,13 +11,19 @@ export const categoriesSlice = createSlice({
     setCategories: (state, action) => {
       state.categories = action.payload;
     },
-    addCategories: (state, action) => {
+    addCategory: (state, action) => {
       state.categories.push(action.payload);
+    },
+    removeCategory: (state, action) => {
+      state.categories = state.categories.filter(
+        (category) => category._id !== action.payload
+      );
     },
     // reducers lainnya...
   },
 });
 
-export const { setCategories, addCategories } = categoriesSlice.actions;
+export const { setCategories, addCategory, removeCategory } =
+  categoriesSlice.actions;
 
 export default categoriesSlice.reducer;

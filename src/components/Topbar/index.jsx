@@ -11,8 +11,7 @@ export default function Topbar() {
     navigate("/signin");
   };
   return (
-    <div className="h-16 flex items-center justify-between px-4">
-      <div>Logo</div>
+    <div className="h-16 flex items-center justify-end px-4 border border-gray-300">
       <div className="flex items-center space-x-4">
         <div className="cursor-pointer hover:text-gray-300">User Profile</div>
         <div className="cursor-pointer hover:text-gray-300">Settings</div>

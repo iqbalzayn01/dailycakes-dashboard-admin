@@ -7,7 +7,7 @@ import TextInputWithLabel from "../../components/TextInputWithLabel";
 import SButton from "../../components/Button";
 import { config } from "../../config";
 import SAlert from "../../components/Alert";
-import { addCategories } from "../../redux/categoriesSlice";
+import { addCategory } from "../../redux/categoriesSlice";
 
 export default function Create() {
   const navigate = useNavigate();
@@ -31,33 +31,34 @@ export default function Create() {
     e.preventDefault();
 
     setIsLoading(true);
-    const res = await axios.post(
-      `${config.api_url}/cms/categories`,
-      {
-        name: form.name,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+    try {
+      const res = await axios.post(
+        `${config.api_url}/cms/categories`,
+        {
+          name: form.name,
         },
-      }
-    );
-    if (res?.data?.data) {
-      dispatch(addCategories(res.data.data.name));
-      console.log(res.data);
-      navigate("/categories");
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const newCategory = res.data.data;
+      dispatch(addCategory(newCategory));
       setIsLoading(false);
-    } else {
+      navigate("/categories");
+    } catch (err) {
       setIsLoading(false);
       setAlert({
         status: true,
-        message: res?.data?.msg ?? "Internal Server Error",
+        message: err.res?.data?.msg ?? "Internal Server Error",
       });
     }
   };
 
   return (
-    <>
+    <main className="w-full m-auto p-5">
       {alert.status && (
         <SAlert
           className="bg-red-100 text-red-600 px-5 py-2 rounded-lg"
@@ -84,6 +85,6 @@ export default function Create() {
           Tambah
         </SButton>
       </form>
-    </>
+    </main>
   );
 }

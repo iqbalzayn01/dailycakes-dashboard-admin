@@ -1,11 +1,12 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Navigate, useNavigate } from "react-router-dom";
-import { refreshAccessToken } from "../../redux/authSlice";
-import { setCategories } from "../../redux/categoriesSlice";
-import axios from "axios";
+// import axios from "axios";
 
-import { config } from "../../config";
+import SButton from "../../components/Button";
+import { refreshAccessToken } from "../../redux/authSlice";
+import { setCategories, removeCategory } from "../../redux/categoriesSlice";
+import { getData, deleteData } from "../../utils/fetch";
 
 export default function Categories() {
   const categories = useSelector((state) => state.categories.categories);
@@ -16,18 +17,12 @@ export default function Categories() {
     const token = localStorage.getItem("token");
 
     if (!token) return <Navigate to="/signin" replace={true} />;
-
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(`${config.api_url}/cms/categories`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        dispatch(setCategories(response.data.data));
-        // console.log(typeof response.data.data);
+        const res = await getData(`/cms/categories/`);
+        dispatch(setCategories(res.data.data));
       } catch (error) {
-        if (error.response && error.response.statu === 401) {
+        if (error.response && error.response.status === 401) {
           dispatch(refreshAccessToken());
         } else {
           console.error("Error fetching categories:", error);
@@ -35,8 +30,17 @@ export default function Categories() {
       }
     };
 
-    fetchCategories();
+    fetchData();
   }, [dispatch]);
+
+  const handleDelete = async (categoryId) => {
+    try {
+      await deleteData(`/cms/categories/${categoryId}`);
+      dispatch(removeCategory(categoryId));
+    } catch (error) {
+      console.error("Error deleting category:", error);
+    }
+  };
 
   if (!Array.isArray(categories)) {
     return <div>Loading...</div>;
@@ -46,16 +50,34 @@ export default function Categories() {
     <main className="w-full mx-auto p-5">
       <div className="flex items-center justify-between mb-5">
         <h1 className="font-bold text-2xl">Kategori</h1>
-        <button
-          onClick={() => navigate("/categories/create")}
+        <SButton
+          action={() => navigate("/categories/create")}
           className="bg-blue-500 hover:bg-blue-600 font-medium text-white text-lg px-4 py-2 rounded-xl"
         >
           + Kategori
-        </button>
+        </SButton>
       </div>
-      <ul>
+      <ul className="flex flex-col gap-5">
         {categories.map((category) => (
-          <li key={category._id}>{category.name}</li>
+          <li key={category._id} className="flex items-center justify-between">
+            <span>{category.name}</span>
+            <div className="flex gap-5">
+              <SButton
+                type="button"
+                className="bg-green-500 hover:bg-green-600 px-5 py-2 text-center text-white rounded-lg"
+                action={() => navigate("/categories/edit")}
+              >
+                Edit
+              </SButton>
+              <SButton
+                type="button"
+                className="bg-red-500 hover:bg-red-600 px-5 py-2 text-center text-white rounded-lg"
+                action={() => handleDelete(category._id)}
+              >
+                Hapus
+              </SButton>
+            </div>
+          </li>
         ))}
       </ul>
     </main>

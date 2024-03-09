@@ -1,12 +1,10 @@
 import axios from "axios";
 import handleError from "./handleError";
-import { config } from "../configs";
+import { config } from "../config";
 
 export async function getData(url, params) {
   try {
-    const { token } = localStorage.getItem("auth")
-      ? JSON.parse(localStorage.getItem("auth"))
-      : {};
+    const token = localStorage.getItem("token");
 
     return await axios.get(`${config.api_url}${url}`, {
       params,
@@ -21,9 +19,7 @@ export async function getData(url, params) {
 
 export async function postData(url, payload, formData) {
   try {
-    const { token } = localStorage.getItem("auth")
-      ? JSON.parse(localStorage.getItem("auth"))
-      : {};
+    const token = localStorage.getItem("token");
 
     return await axios.post(`${config.api_url}${url}`, payload, {
       headers: {
@@ -38,9 +34,7 @@ export async function postData(url, payload, formData) {
 
 export async function putData(url, payload) {
   try {
-    const { token } = localStorage.getItem("auth")
-      ? JSON.parse(localStorage.getItem("auth"))
-      : {};
+    const token = localStorage.getItem("token");
 
     return await axios.put(`${config.api_url}${url}`, payload, {
       headers: {
@@ -54,9 +48,7 @@ export async function putData(url, payload) {
 
 export async function deleteData(url) {
   try {
-    const { token } = localStorage.getItem("auth")
-      ? JSON.parse(localStorage.getItem("auth"))
-      : {};
+    const token = localStorage.getItem("token");
 
     return await axios.delete(`${config.api_url}${url}`, {
       headers: {
