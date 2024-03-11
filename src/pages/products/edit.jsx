@@ -96,7 +96,7 @@ export default function Edit() {
             className="bg-red-500 hover:bg-red-600 px-5 py-2 text-center text-white rounded-lg"
             loading={isLoading}
             disabled={isLoading}
-            action={() => navigate("/categories")}
+            action={() => navigate("/products")}
           >
             Batal
           </SButton>

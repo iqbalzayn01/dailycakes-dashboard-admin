@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 
-export default function TextInputWithLabel({
+export default function TextAreaWithLabel({
   htmlFor,
   label,
   name,
@@ -9,35 +9,32 @@ export default function TextInputWithLabel({
   className,
   placeholder,
   onChange,
-  accept,
 }) {
   return (
     <div>
       <label htmlFor={htmlFor} className="sr-only">
         {label}
       </label>
-      <input
+      <textarea
         name={name}
         type={type}
         value={value}
         className={className}
         placeholder={placeholder}
         onChange={onChange}
-        accept={accept}
         required
       />
     </div>
   );
 }
 
-TextInputWithLabel.propTypes = {
+TextAreaWithLabel.propTypes = {
   htmlFor: PropTypes.string,
   label: PropTypes.string,
   name: PropTypes.string,
   type: PropTypes.string,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  value: PropTypes.string,
   className: PropTypes.string,
   placeholder: PropTypes.string,
   onChange: PropTypes.func,
-  accept: PropTypes.string,
 };

@@ -5,8 +5,8 @@ import PageSignIn from "../pages/signin";
 import Topbar from "../components/Topbar";
 import Sidebar from "../components/Sidebar";
 import { HomeRoute } from "./HomeRoute";
-// import Categories from "../pages/categories";
 import { CategoriesRoute } from "./CategoriesRoute";
+import { ProductsRoute } from "./ProductsRoute";
 
 export const AppRoutes = () => {
   return (
@@ -23,6 +23,7 @@ export const AppRoutes = () => {
                 <Routes>
                   <Route path="/*" element={<HomeRoute />} />
                   <Route path="/categories/*" element={<CategoriesRoute />} />
+                  <Route path="/products/*" element={<ProductsRoute />} />
                 </Routes>
               </div>
             </div>
