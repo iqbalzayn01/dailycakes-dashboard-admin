@@ -5,17 +5,19 @@ import { Navigate, useNavigate } from "react-router-dom";
 import SButton from "../../components/Button";
 import { refreshAccessToken } from "../../redux/authSlice";
 import { setProducts, removeProduct } from "../../redux/productsSlice";
+import { setImages } from "../../redux/imagesSlice";
 import { getData, deleteData } from "../../utils/fetch";
+import { config } from "../../config";
 
 export default function Products() {
   const products = useSelector((state) => state.products.products);
+  const images = useSelector((state) => state.images.images);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
-    if (!token) return <Navigate to="/signin" replace={true} />;
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await getData(`/cms/products`);
@@ -31,6 +33,25 @@ export default function Products() {
 
     fetchData();
   }, [dispatch]);
+
+  useEffect(() => {
+    const fetchDataImages = async () => {
+      try {
+        const res = await getData(`/cms/images`);
+        dispatch(setImages(res.data.data));
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          dispatch(refreshAccessToken());
+        } else {
+          console.error("Error fetching products:", error);
+        }
+      }
+    };
+
+    fetchDataImages();
+  }, [dispatch]);
+
+  if (!token) return <Navigate to="/signin" replace={true} />;
 
   const handleDelete = async (productId) => {
     try {
@@ -56,29 +77,59 @@ export default function Products() {
           + Daftar Produk
         </SButton>
       </div>
-      <ul className="flex flex-col gap-5">
-        {products.map((product) => (
-          <li key={product._id} className="flex items-center justify-between">
-            <span>{product.productName}</span>
-            <div className="flex gap-5">
-              <SButton
-                type="button"
-                className="bg-green-500 hover:bg-green-600 px-5 py-2 text-center text-white rounded-lg"
-                action={() => navigate(`/products/edit/${product._id}`)}
-              >
-                Edit
-              </SButton>
-              <SButton
-                type="button"
-                className="bg-red-500 hover:bg-red-600 px-5 py-2 text-center text-white rounded-lg"
-                action={() => handleDelete(product._id)}
-              >
-                Hapus
-              </SButton>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <table className="w-full">
+        <thead>
+          <tr>
+            <th className="py-2">Nama Produk</th>
+            <th className="py-2">Kategori</th>
+            <th className="py-2">Deskripsi</th>
+            <th className="py-2">Harga</th>
+            <th className="py-2">Stok</th>
+            <th className="py-2">Gambar</th>
+            <th className="py-2">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {products.map((product) => (
+            <tr key={product._id} className="border-b">
+              <td className="py-2">{product.productName}</td>
+              <td className="py-2">{product.category.name}</td>
+              <td className="py-2">{product.description}</td>
+              <td className="py-2">{product.price}</td>
+              <td className="py-2">{product.stock}</td>
+              <td className="py-2">
+                {images.map(
+                  (image) =>
+                    image._id === product.image && (
+                      <img
+                        key={image._id}
+                        src={`${config.api_url}/cms/images/${image.name}`}
+                        alt={product.productName}
+                        className="h-16 w-auto"
+                      />
+                    )
+                )}
+              </td>
+              <td className="py-2 flex gap-5">
+                <SButton
+                  type="button"
+                  className="bg-green-500 hover:bg-green-600 px-5 py-2 text-center text-white rounded-lg"
+                  action={() => navigate(`/products/edit/${product._id}`)}
+                >
+                  Edit
+                </SButton>
+                <SButton
+                  type="button"
+                  className="bg-red-500 hover:bg-red-600 px-5 py-2 text-center text-white rounded-lg"
+                  action={() => handleDelete(product._id)}
+                >
+                  Hapus
+                </SButton>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </main>
   );
 }

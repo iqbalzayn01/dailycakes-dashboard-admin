@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
+import { config } from "../../config";
 
 import TextInputWithLabel from "../../components/TextInputWithLabel";
 import TextAreaWithLabel from "../../components/TextAreaWithLabel";
@@ -9,6 +11,7 @@ import SAlert from "../../components/Alert";
 import { getData, postData } from "../../utils/fetch";
 import { setCategories } from "../../redux/categoriesSlice";
 import { addProduct } from "../../redux/productsSlice";
+import { addImage } from "../../redux/imagesSlice";
 
 export default function Create() {
   const categories = useSelector((state) => state.categories.categories);
@@ -22,6 +25,7 @@ export default function Create() {
     category: "",
     image: "",
   });
+  const [image, setImage] = useState(null);
   const [alert, setAlert] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -46,20 +50,46 @@ export default function Create() {
     setForm({ ...form, [name]: value });
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImage(file);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    try {
-      const resImg = await postData(`/cms/images`);
+    const formData = new FormData();
+    formData.append("product_image", image);
 
+    let imageId = null;
+
+    try {
+      const token = localStorage.getItem("token");
+      const resImg = await axios.post(
+        `${config.api_url}/cms/images`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      dispatch(addImage(resImg.data.data));
+      imageId = resImg.data.data._id;
+    } catch (err) {
+      console.error("Error uploading image:", err);
+    }
+
+    try {
       const payload = {
         productName: form.productName,
         description: form.description,
         price: form.price,
         stock: form.stock,
         category: form.category,
-        image: resImg.data.data._id,
+        image: imageId,
       };
 
       const res = await postData(`/cms/products`, payload);
@@ -139,6 +169,15 @@ export default function Create() {
             </option>
           ))}
         </select>
+        <TextInputWithLabel
+          htmlFor="image"
+          label="Gambar"
+          name="image"
+          type="file"
+          className="text-input mb-6"
+          placeholder="Gambar"
+          onChange={handleImageChange}
+        />
         <SButton
           type="submit"
           className="bg-blue-500 hover:bg-blue-600 px-5 py-2 text-center text-white rounded-lg"
